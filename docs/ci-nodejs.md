@@ -1,69 +1,80 @@
 # CI Node.js
 
-Workflow reutilizável de CI para projetos **Node.js**.
+Reusable CI workflow for **Node.js** projects.
 
-Este documento descreve **exclusivamente** o workflow localizado em:
+This document describes only:
 
-```
-
+```text
 .github/workflows/ci-nodejs.yml
-
 ```
 
----
+## What this workflow does
 
-## ✅ O que este workflow faz
+This CI runs the main validation and build steps for a Node.js project in parallel.
 
-Este CI executa, **em paralelo**, as principais etapas de validação e build de um projeto Node.js.
+| Job | Script |
+| --- | --- |
+| Typecheck | `typecheck` |
+| Format Check | `format:check` |
+| Lint | `lint` |
+| Tests | `test:run` |
+| Build | `build` |
 
-Jobs executados:
+If any job fails, the workflow fails.
 
-| Job       | Script executado       |
-| --------- | ---------------------- |
-| Typecheck | `npm run typecheck`    |
-| Format    | `npm run format:check` |
-| Lint      | `npm run lint`         |
-| Test      | `npm run test:run`     |
-| Build     | `npm run build`        |
+## How it is triggered
 
-➡️ Se **qualquer job falhar**, o workflow falha.
+This is a reusable workflow defined with `on.workflow_call`.
 
----
+It does not run by itself and must be consumed from another repository with `uses`.
 
-## ▶️ Como o workflow é acionado
+## Inputs
 
-Este é um **reusable workflow**, definido com:
+| Name | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `node-version` | string | Yes | - | Node.js version |
+| `package-manager` | string | No | `""` | `npm`, `pnpm`, or `yarn`. Empty means auto-detection |
+| `pnpm-version` | string | No | `"9"` | pnpm version used when the selected manager is `pnpm` |
 
-```
-
-on:
-workflow\_call
-
-```
-
-Ele **não executa sozinho**.  
-Deve ser chamado a partir de outro repositório usando `uses`.
-
----
-
-## 📥 Inputs esperados
-
-| Nome         | Tipo   | Obrigatório | Descrição         |
-| ------------ | ------ | ----------- | ----------------- |
-| node-version | string | ✅ Sim      | Versão do Node.js |
-
-Exemplo:
+Example:
 
 ```yaml
 with:
-  node-version: 18
+  node-version: 20
 ```
 
----
+Example with explicit package manager:
 
-## 📦 Scripts exigidos no projeto consumidor
+```yaml
+with:
+  node-version: 20
+  package-manager: pnpm
+  pnpm-version: 9
+```
 
-O projeto que consome este workflow **DEVE** definir no `package.json` os seguintes scripts:
+## Package manager behavior
+
+The workflow supports `npm`, `pnpm`, and `yarn`.
+
+When `package-manager` is empty, detection is based on the repository lockfile:
+
+| Manager | Lockfile | Install command | Script command |
+| --- | --- | --- | --- |
+| `npm` | `package-lock.json` | `npm ci` | `npm run <script>` |
+| `pnpm` | `pnpm-lock.yaml` | `pnpm install --frozen-lockfile` | `pnpm run <script>` |
+| `yarn` | `yarn.lock` | `yarn install --frozen-lockfile` | `yarn <script>` |
+
+Rules:
+
+- If no supported lockfile is found, the workflow fails early.
+- If multiple supported lockfiles are found, the workflow fails early and requires `package-manager` to be set explicitly.
+- If `package-manager` is set but its lockfile is missing, the workflow fails early.
+
+This avoids silent installs with the wrong package manager.
+
+## Scripts required in the consumer project
+
+The consumer project must define these scripts in `package.json`:
 
 ```json
 {
@@ -77,44 +88,38 @@ O projeto que consome este workflow **DEVE** definir no `package.json` os seguin
 }
 ```
 
-Os nomes devem coincidir **exatamente**.
+The script names must match exactly.
 
----
+## Technical notes
 
-## 🧱 Características técnicas
+- A `prepare` job detects the package manager once and shares the result with all CI jobs.
+- The validation/build jobs run as a matrix, which keeps the workflow shorter and easier to maintain.
+- `actions/setup-node` cache is configured with the selected package manager and its lockfile.
+- `corepack enable` is used for Yarn.
+- `pnpm/action-setup` is used only when the selected manager is `pnpm`.
 
-- Cada job:
-  - Executa em máquina isolada
-  - Faz `npm ci`
-  - Usa cache baseado em `package-lock.json`
-- Jobs não dependem uns dos outros
-- Execução paralela maximiza feedback rápido
-
----
-
-## 🧪 Exemplo de uso
+## Usage example
 
 ```yaml
 jobs:
   ci-nodejs:
-    uses: ORG/gh-actions-catalog/.github/workflows/ci-nodejs.yml@v1.0.0
+    uses: ORG/gh-actions-catalog/.github/workflows/ci-nodejs.yml@v1.1.0
     with:
-      node-version: 18
+      node-version: 20
 ```
 
----
+Example with an explicit override:
 
-## ⚠️ Observações importantes
+```yaml
+jobs:
+  ci-nodejs:
+    uses: ORG/gh-actions-catalog/.github/workflows/ci-nodejs.yml@v1.1.0
+    with:
+      node-version: 20
+      package-manager: yarn
+```
 
-- O workflow assume uso de **npm**
-- Não há fallback para `yarn` ou `pnpm`
-- Scripts ausentes causam falha imediata
-- Versionamento deve seguir o definido em `docs/versioning.md`
+## Related documentation
 
----
-
-## 📎 Documentação relacionada
-
-- Regras gerais de uso: `docs/usage.md`
-- Este workflow: `docs/ci-nodejs.md`
-- Versionamento do catálogo: `docs/versioning.md`
+- General usage: `docs/usage.md`
+- Catalog versioning: `docs/versioning.md`
