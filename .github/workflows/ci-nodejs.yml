@@ -133,12 +133,22 @@ jobs:
         if: needs.prepare.outputs.manager == 'pnpm'
         with:
           version: ${{ inputs.pnpm-version }}
+          cache: true
+          cache-dependency-path: ${{ needs.prepare.outputs.lockfile }}
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js (npm/yarn with cache)
+        if: needs.prepare.outputs.manager != 'pnpm'
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
           cache: ${{ needs.prepare.outputs.manager }}
           cache-dependency-path: ${{ needs.prepare.outputs.lockfile }}
+
+      - name: Setup Node.js (pnpm – cache handled by pnpm/action-setup)
+        if: needs.prepare.outputs.manager == 'pnpm'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
 
       - name: Install dependencies
         run: ${{ needs.prepare.outputs.install_command }}
