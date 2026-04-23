@@ -1,8 +1,5 @@
 name: Reusable CI - Node.js
 
-# Reusable CI workflow for Node.js projects following standard scripts
-# Specific documentation: docs/ci-nodejs.md
-
 on:
   workflow_call:
     inputs:
@@ -15,11 +12,6 @@ on:
         type: string
         required: false
         default: ""
-      pnpm-version:
-        description: "pnpm version used when package-manager resolves to pnpm"
-        type: string
-        required: false
-        default: "10"
 
 jobs:
   prepare:
@@ -39,47 +31,21 @@ jobs:
         run: |
           manager="${{ inputs.package-manager }}"
 
-          set_values() {
-            case "$1" in
-              npm)
-                lockfile="package-lock.json"
-                install_command="npm ci"
-                run_command="npm run"
-                ;;
-              pnpm)
-                lockfile="pnpm-lock.yaml"
-                install_command="pnpm install --frozen-lockfile"
-                run_command="pnpm run"
-                ;;
-              yarn)
-                lockfile="yarn.lock"
-                install_command="yarn install --frozen-lockfile"
-                run_command="yarn"
-                ;;
-              *)
-                echo "::error::Unsupported package manager: $1. Use npm, pnpm, or yarn."
-                exit 1
-                ;;
-            esac
-          }
-
           if [ -z "$manager" ]; then
             detected=0
 
-            if [ -f "package-lock.json" ]; then
-              manager="npm"
-              detected=$((detected + 1))
-            fi
+            for candidate in npm pnpm yarn; do
+              case "$candidate" in
+                npm)  file="package-lock.json" ;;
+                pnpm) file="pnpm-lock.yaml" ;;
+                yarn) file="yarn.lock" ;;
+              esac
 
-            if [ -f "pnpm-lock.yaml" ]; then
-              manager="pnpm"
-              detected=$((detected + 1))
-            fi
-
-            if [ -f "yarn.lock" ]; then
-              manager="yarn"
-              detected=$((detected + 1))
-            fi
+              if [ -f "$file" ]; then
+                manager="$candidate"
+                detected=$((detected + 1))
+              fi
+            done
 
             if [ "$detected" -eq 0 ]; then
               echo "::error::No supported lockfile found. Commit package-lock.json, pnpm-lock.yaml, or yarn.lock, or set the package-manager input."
@@ -92,7 +58,27 @@ jobs:
             fi
           fi
 
-          set_values "$manager"
+          case "$manager" in
+            npm)
+              lockfile="package-lock.json"
+              install_command="npm ci"
+              run_command="npm run"
+              ;;
+            pnpm)
+              lockfile="pnpm-lock.yaml"
+              install_command="pnpm install --frozen-lockfile"
+              run_command="pnpm run"
+              ;;
+            yarn)
+              lockfile="yarn.lock"
+              install_command="yarn install --frozen-lockfile"
+              run_command="yarn"
+              ;;
+            *)
+              echo "::error::Unsupported package manager: $manager. Use npm, pnpm, or yarn."
+              exit 1
+              ;;
+          esac
 
           if [ ! -f "$lockfile" ]; then
             echo "::error::Selected package manager '$manager' requires '$lockfile', but it was not found."
@@ -132,24 +118,16 @@ jobs:
 
       - name: Setup pnpm
         if: needs.prepare.outputs.manager == 'pnpm'
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@v4
         with:
-          version: ${{ inputs.pnpm-version }}
-          run_install: false
+          version: latest
 
-      - name: Setup Node.js (npm/yarn with cache)
-        if: needs.prepare.outputs.manager != 'pnpm'
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
           cache: ${{ needs.prepare.outputs.manager }}
           cache-dependency-path: ${{ needs.prepare.outputs.lockfile }}
-
-      - name: Setup Node.js (pnpm without cache)
-        if: needs.prepare.outputs.manager == 'pnpm'
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ inputs.node-version }}
 
       - name: Install dependencies
         run: ${{ needs.prepare.outputs.install_command }}
