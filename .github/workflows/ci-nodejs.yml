@@ -19,7 +19,7 @@ on:
         description: "pnpm version used when package-manager resolves to pnpm"
         type: string
         required: false
-        default: "9"
+        default: "10"
 
 jobs:
   prepare:
@@ -122,6 +122,7 @@ jobs:
             script: test:run
           - name: Build
             script: build
+
     steps:
       - uses: actions/checkout@v4
 
@@ -131,16 +132,24 @@ jobs:
 
       - name: Setup pnpm
         if: needs.prepare.outputs.manager == 'pnpm'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: ${{ inputs.pnpm-version }}
+          run_install: false
 
-      - name: Setup Node.js
+      - name: Setup Node.js (npm/yarn with cache)
+        if: needs.prepare.outputs.manager != 'pnpm'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
           cache: ${{ needs.prepare.outputs.manager }}
           cache-dependency-path: ${{ needs.prepare.outputs.lockfile }}
+
+      - name: Setup Node.js (pnpm without cache)
+        if: needs.prepare.outputs.manager == 'pnpm'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
 
       - name: Install dependencies
         run: ${{ needs.prepare.outputs.install_command }}
