@@ -1,83 +1,62 @@
-# Versionamento do catálogo
+# Catalog Versioning
 
-Este repositório de catálogo de GitHub Actions segue **versionamento semântico** para todos os workflows reutilizáveis disponibilizados.
+This repository follows semantic versioning for all reusable workflows published in the catalog.
 
-O versionamento se aplica ao **conjunto de workflows**, e não a arquivos individuais.
+Versioning applies to the catalog as a whole, not to individual files.
 
----
+## Convention
 
-## 📌 Convenção adotada
+Format:
 
-Formato:
-
-```
-
+```text
 vMAJOR.MINOR.PATCH
-
 ```
 
-### Significado
+Meaning:
 
-- **MAJOR**  
-  Mudanças incompatíveis que podem quebrar workflows consumidores.
+- `MAJOR`: incompatible changes that may break consumers
+- `MINOR`: backward-compatible features or behavior improvements
+- `PATCH`: internal fixes that do not change the expected contract
 
-- **MINOR**  
-  Novas funcionalidades ou melhorias **compatíveis** com versões anteriores.
+## Examples
 
-- **PATCH**  
-  Correções internas ou ajustes que não alteram comportamento esperado.
+- `v1.0.0`: initial stable release
+- `v1.1.0`: backward-compatible workflow improvement, such as new optional inputs
+- `v2.0.0`: incompatible change, such as removing or renaming inputs
 
----
+## Consumer rule
 
-## ✅ Exemplos
-
-- `v1.0.0` — versão inicial estável do catálogo
-- `v1.1.0` — melhorias compatíveis (ex.: novos inputs opcionais)
-- `v2.0.0` — mudança incompatível (ex.: remoção ou renomeação de inputs)
-
----
-
-## 🔒 Regra obrigatória para consumidores
-
-Workflows consumidores **devem sempre** referenciar:
-
-✅ Uma **tag versionada**:
+Consumers should always reference either:
 
 ```yaml
-@v1.0.0
+@v1.1.0
 ```
 
-✅ Ou um **SHA específico**:
+or a specific commit SHA:
 
 ```yaml
 @3f2c1a9e4b...
 ```
 
-❌ Não utilize referências flutuantes:
+Avoid floating references:
 
 ```yaml
 @main
 ```
 
----
+## Rationale
 
-## 🧠 Racional
+This policy improves:
 
-Essa política garante:
+- pipeline predictability
+- build reproducibility
+- safety against unexpected breakage
+- controlled evolution of the catalog
 
-- Previsibilidade para pipelines consumidores
-- Reprodutibilidade de builds
-- Segurança contra quebras inesperadas
-- Evolução controlada do catálogo
+## Releasing a new version
 
----
+Any behavior-changing update should include:
 
-## 🔄 Atualização de versão
-
-Toda alteração que afete comportamento deve ser acompanhada de:
-
-1.  Incremento correto da versão
-2.  Nova tag Git
-3.  Documentação atualizada nos arquivos `docs/**` relevantes
-
-O uso consistente desse modelo é obrigatório para manter a confiabilidade do catálogo.
+1. The correct semantic version increment
+2. A new Git tag
+3. Updated documentation in the relevant `docs/**` files

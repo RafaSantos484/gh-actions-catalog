@@ -1,34 +1,29 @@
 # GitHub Actions Catalog
 
-Catálogo público de **workflows reutilizáveis do GitHub Actions**, com foco em **padronização**, **reuso** e **manutenção centralizada** de pipelines de CI/CD.
+Public catalog of reusable GitHub Actions workflows focused on standardization, reuse, and centralized CI/CD pipeline maintenance.
 
-Este repositório não executa pipelines próprios — ele fornece **reusable workflows** para serem consumidos por outros repositórios.
+This repository does not run its own product pipelines. It provides reusable workflows meant to be consumed by other repositories.
 
----
+## Goals
 
-## 🎯 Objetivos
+- Avoid pipeline duplication across projects
+- Standardize CI across multiple repositories
+- Centralize workflow maintenance and evolution
+- Ensure predictability through explicit versioning
 
-- Evitar duplicação de pipelines entre projetos
-- Padronizar CI entre múltiplos repositórios
-- Centralizar manutenção e evolução dos workflows
-- Garantir previsibilidade por meio de versionamento explícito
+## What this catalog contains
 
----
+- Reusable workflows defined with `workflow_call`
+- Mirrored documentation for each workflow
+- A clear versioning policy
+- A scalable structure for new workflow types
 
-## 🧩 O que há neste catálogo
-
-✅ **Reusable workflows**, definidos com `workflow_call`  
-✅ Documentação **espelhada** para cada workflow  
-✅ Política clara de versionamento  
-✅ Estrutura escalável para novos tipos de workflow
-
----
-
-## 📁 Estrutura do repositório
+## Repository structure
 
 ```text
 .
 ├── .github/
+│   ├── copilot-instructions.md
 │   └── workflows/
 │       └── ci-nodejs.yml
 ├── docs/
@@ -36,91 +31,87 @@ Este repositório não executa pipelines próprios — ele fornece **reusable wo
 │   ├── usage.md
 │   ├── versioning.md
 │   └── ci-nodejs.md
+├── AGENTS.md
+├── CLAUDE.md
 └── README.md
 ```
 
-### Princípio de espelhamento
+### Mirroring principle
 
-Para cada workflow em:
+For each workflow in:
 
-  .github/workflows/arquivo.yml
+```text
+.github/workflows/file.yml
+```
 
-existe uma documentação correspondente em:
+there should be corresponding documentation in:
 
-  docs/arquivo.md
+```text
+docs/file.md
+```
 
-Observacao: o GitHub Actions exige que reusable workflows estejam no nivel raiz de `.github/workflows/`.
+GitHub Actions requires reusable workflows to live at the root of `.github/workflows/`.
 
----
-
-## 🚀 Workflows disponíveis
+## Available workflows
 
 ### CI
 
-- **Node.js**
+- Node.js
   - Workflow: `.github/workflows/ci-nodejs.yml`
-  - Documentação: `docs/ci-nodejs.md`
+  - Documentation: `docs/ci-nodejs.md`
 
----
+## How to use
 
-## 🧪 Como usar
+These workflows are meant to be consumed from other repositories with `uses`.
 
-Os workflows deste catálogo devem ser consumidos a partir de outros repositórios usando a diretiva `uses`.
-
-Exemplo:
+Example:
 
 ```yaml
 jobs:
   ci:
-    uses: ORG/REPO/.github/workflows/ci-nodejs.yml@v1.0.0
+    uses: ORG/REPO/.github/workflows/ci-nodejs.yml@v1.1.0
     with:
-      node-version: 18
+      node-version: 20
 ```
 
-📘 Consulte sempre:
+Read these documents before integration:
 
-- `docs/usage.md` — uso geral
-- `docs/versioning.md` — versionamento
-- O `.md` espelhado do workflow desejado
+- `docs/README.md`
+- `docs/usage.md`
+- `docs/versioning.md`
+- The mirrored `.md` file for the workflow you want to use
 
----
+## Versioning
 
-## 🔖 Versionamento
+- The catalog follows semantic versioning
+- Consumers should use versioned tags
+- Floating references such as `main` are not supported
 
-- O catálogo segue **versionamento semântico**
-- Consumidores **devem usar tags versionadas**
-- Referências a `main` **não são suportadas**
+See `docs/versioning.md` for details.
 
-Detalhes em: `docs/versioning.md`
+## Repository principles
 
----
+- Each workflow should be self-contained
+- Documentation should remain local and specific
+- Global rules should live in `docs/`
+- Behavior changes should follow explicit versioning
+- Clarity should take priority over convenience
+- All code, comments, and documentation should be written in English
 
-## ✅ Princípios adotados
+## Documentation
 
-- Cada workflow é **autocontido**
-- Documentação é **local e específica**
-- Regras globais vivem em `docs/`
-- Mudanças seguem versionamento explícito
-- Clareza acima de conveniência
+- Index: `docs/README.md`
+- General usage: `docs/usage.md`
+- Node.js CI: `docs/ci-nodejs.md`
 
----
+## Status
 
-## 📚 Documentação
+This catalog is ready to grow with additional workflows, such as:
 
-- Índice completo: `docs/README.md`
-- Uso geral: `docs/usage.md`
-- CI Node.js: `docs/ci-nodejs.md`
+- Frontend CI
+- Backend CI
+- Library CI
+- Monorepo CI
+- CD / release workflows
 
----
-
-## 📌 Status
-
-Este catálogo está em evolução e preparado para receber novos workflows, como:
-
-- CI para frontend (Next.js)
-- CI para backend
-- CI para libraries
-- Monorepos
-- CD / Release
-
-Contribuições devem respeitar o padrão de espelhamento e documentação.
+Contributions should preserve the mirroring pattern and keep all repository content in English.

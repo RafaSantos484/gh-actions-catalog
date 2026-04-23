@@ -1,35 +1,27 @@
-# Uso dos workflows reutilizáveis
+# Reusable Workflow Usage
 
-Este catálogo fornece **workflows reutilizáveis do GitHub Actions**, que devem ser consumidos por outros repositórios por meio da diretiva `uses`.
+This catalog provides reusable GitHub Actions workflows meant to be consumed from other repositories through `uses`.
 
----
+## Workflow type
 
-## Tipo de workflow
+All workflows in this catalog are reusable workflows defined with:
 
-Todos os workflows deste catálogo são do tipo **reusable workflow**, definidos com:
-
-```
-
+```yaml
 on:
-workflow\_call:
-
+  workflow_call:
 ```
 
-Eles **não são executados diretamente** neste repositório.
+They are not intended to run directly in this repository.
 
----
+## How to use from a consumer repository
 
-## Como usar em um repositório consumidor
+In the consuming repository, create a workflow such as:
 
-No repositório que irá consumir o workflow, crie um arquivo em:
-
-```
-
+```text
 .github/workflows/ci.yml
-
 ```
 
-Exemplo mínimo:
+Minimal example:
 
 ```yaml
 name: CI
@@ -42,54 +34,51 @@ on:
 
 jobs:
   ci:
-    uses: ORG/REPO/.github/workflows/caminho.yml@TAG
+    uses: ORG/REPO/.github/workflows/path.yml@TAG
     with:
-      input-exemplo: valor
+      example-input: value
 ```
 
----
+## Workflow reference
 
-## Referência do workflow
+- The workflow path must be exact.
+- The referenced file must live at the repository root inside `.github/workflows/`.
+- The repository may be public or private.
+- Always reference a versioned tag or a specific commit SHA.
 
-- O caminho do workflow deve ser **exato**
-- O arquivo referenciado deve estar no **nivel raiz** de `.github/workflows/`
-- O repositório pode ser público ou privado
-- Sempre informe uma **tag versionada** ou SHA
+Valid example from this catalog:
 
-Exemplo de referencia valida neste catalogo:
+```yaml
+uses: ORG/REPO/.github/workflows/ci-nodejs.yml@v1.1.0
+```
 
-  uses: ORG/REPO/.github/workflows/ci-nodejs.yml@v1.0.0
+Correct:
 
-✅ Correto:
+```text
+@v1.1.0
+```
 
-    @v1.0.0
+Avoid:
 
-❌ Evite:
-
-    @main
-
----
+```text
+@main
+```
 
 ## Inputs
 
-Cada workflow define seus próprios `inputs`.  
-Consulte sempre o arquivo de documentação **espelhado** em `docs/**` antes de usar.
+Each workflow defines its own inputs.
 
----
+Always read the corresponding documentation file in `docs/**` before integrating a workflow.
 
-## Boas práticas
+## Good practices
 
-- Leia a documentação específica do workflow antes de integrá-lo
-- Não assuma scripts ou comportamentos implícitos
-- Atualize a versão de forma consciente
-- Trate falhas como bloqueantes no CI
+- Read the workflow-specific documentation before adoption.
+- Do not assume implicit scripts or behavior.
+- Upgrade versions deliberately.
+- Treat CI failures as blocking.
 
----
+## Where to find documentation
 
-## Onde encontrar a documentação
-
-- Regras gerais: arquivos na raiz de `docs/`
-- Workflow de CI Node.js: `docs/ci-nodejs.md`
-- Cada workflow possui um arquivo `.md` com o mesmo caminho relativo do `.yml`
-
-Esse padrão garante uso consistente e previsível em múltiplos projetos.
+- General rules: files at the root of `docs/`
+- Node.js CI workflow: `docs/ci-nodejs.md`
+- Each workflow should have a matching `.md` file for its `.yml`
