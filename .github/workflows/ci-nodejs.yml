@@ -1,13 +1,13 @@
 name: Reusable CI - Node.js
 
-# CI reutilizável para projetos Node.js que seguem scripts padrão
-# Documentação específica: docs/ci/nodejs.md
+# CI reutilizavel para projetos Node.js que seguem scripts padrao
+# Documentacao especifica: docs/ci-nodejs.md
 
 on:
   workflow_call:
     inputs:
       node-version:
-        description: "Versão do Node.js"
+        description: "Versao do Node.js"
         type: string
         required: true
 

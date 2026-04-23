@@ -30,15 +30,12 @@ Este repositório não executa pipelines próprios — ele fornece **reusable wo
 .
 ├── .github/
 │   └── workflows/
-│       └── ci/
-│           └── nodejs.yml
+│       └── ci-nodejs.yml
 ├── docs/
 │   ├── README.md
 │   ├── usage.md
 │   ├── versioning.md
-│   └── ci/
-│       ├── README.md
-│       └── nodejs.md
+│   └── ci-nodejs.md
 └── README.md
 ```
 
@@ -46,11 +43,13 @@ Este repositório não executa pipelines próprios — ele fornece **reusable wo
 
 Para cada workflow em:
 
-    .github/workflows/**/arquivo.yml
+  .github/workflows/arquivo.yml
 
 existe uma documentação correspondente em:
 
-    docs/**/arquivo.md
+  docs/arquivo.md
+
+Observacao: o GitHub Actions exige que reusable workflows estejam no nivel raiz de `.github/workflows/`.
 
 ---
 
@@ -59,8 +58,8 @@ existe uma documentação correspondente em:
 ### CI
 
 - **Node.js**
-  - Workflow: `.github/workflows/ci/nodejs.yml`
-  - Documentação: `docs/ci/nodejs.md`
+  - Workflow: `.github/workflows/ci-nodejs.yml`
+  - Documentação: `docs/ci-nodejs.md`
 
 ---
 
@@ -73,7 +72,7 @@ Exemplo:
 ```yaml
 jobs:
   ci:
-    uses: ORG/REPO/.github/workflows/ci/nodejs.yml@v1.0.0
+    uses: ORG/REPO/.github/workflows/ci-nodejs.yml@v1.0.0
     with:
       node-version: 18
 ```
@@ -110,7 +109,7 @@ Detalhes em: `docs/versioning.md`
 
 - Índice completo: `docs/README.md`
 - Uso geral: `docs/usage.md`
-- CI: `docs/ci/`
+- CI Node.js: `docs/ci-nodejs.md`
 
 ---
 

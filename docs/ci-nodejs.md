@@ -6,7 +6,7 @@ Este documento descreve **exclusivamente** o workflow localizado em:
 
 ```
 
-.github/workflows/ci/nodejs.yml
+.github/workflows/ci-nodejs.yml
 
 ```
 
@@ -97,7 +97,7 @@ Os nomes devem coincidir **exatamente**.
 ```yaml
 jobs:
   ci-nodejs:
-    uses: ORG/gh-actions-catalog/.github/workflows/ci/nodejs.yml@v1.0.0
+    uses: ORG/gh-actions-catalog/.github/workflows/ci-nodejs.yml@v1.0.0
     with:
       node-version: 18
 ```
@@ -116,5 +116,5 @@ jobs:
 ## 📎 Documentação relacionada
 
 - Regras gerais de uso: `docs/usage.md`
-- Convenções de CI: `docs/ci/README.md`
+- Este workflow: `docs/ci-nodejs.md`
 - Versionamento do catálogo: `docs/versioning.md`

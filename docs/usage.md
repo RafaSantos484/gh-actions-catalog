@@ -52,8 +52,13 @@ jobs:
 ## Referência do workflow
 
 - O caminho do workflow deve ser **exato**
+- O arquivo referenciado deve estar no **nivel raiz** de `.github/workflows/`
 - O repositório pode ser público ou privado
 - Sempre informe uma **tag versionada** ou SHA
+
+Exemplo de referencia valida neste catalogo:
+
+  uses: ORG/REPO/.github/workflows/ci-nodejs.yml@v1.0.0
 
 ✅ Correto:
 
@@ -84,7 +89,7 @@ Consulte sempre o arquivo de documentação **espelhado** em `docs/**` antes de 
 ## Onde encontrar a documentação
 
 - Regras gerais: arquivos na raiz de `docs/`
-- Workflows de CI: `docs/ci/`
+- Workflow de CI Node.js: `docs/ci-nodejs.md`
 - Cada workflow possui um arquivo `.md` com o mesmo caminho relativo do `.yml`
 
 Esse padrão garante uso consistente e previsível em múltiplos projetos.
