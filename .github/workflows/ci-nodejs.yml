@@ -105,7 +105,7 @@ jobs:
           - name: Lint
             script: lint
           - name: Tests
-            script: test:run
+            script: test
           - name: Build
             script: build
 
